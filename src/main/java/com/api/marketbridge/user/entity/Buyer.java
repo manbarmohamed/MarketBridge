@@ -8,9 +8,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Buyer extends User {
 
     @OneToMany(mappedBy = "sender")

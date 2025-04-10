@@ -7,9 +7,6 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Seller extends User {
 
     private Double rating;
