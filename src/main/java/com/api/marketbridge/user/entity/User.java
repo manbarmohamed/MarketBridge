@@ -22,7 +22,7 @@ public abstract class User {
     private Long id;
 
     private String fullName;
-
+    private String username;
     @Column(unique = true)
     private String email;
 
