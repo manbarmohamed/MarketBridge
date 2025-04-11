@@ -6,6 +6,7 @@ import com.api.marketbridge.category.entity.Category;
 import com.api.marketbridge.category.mapper.CategoryMapper;
 import com.api.marketbridge.category.repository.CategoryRepository;
 import com.api.marketbridge.category.service.CategoryService;
+import com.api.marketbridge.commun.ResourceAlreadyExistException;
 import com.api.marketbridge.commun.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper; // Uncomment if using a mapper
+    private final CategoryMapper categoryMapper;
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
+        if (categoryRepository.existsByName(category.getName())) {
+            throw new ResourceAlreadyExistException("Category with this name already exists");
+        }
         category = categoryRepository.save(category);
         return categoryMapper.toResponse(category);
     }

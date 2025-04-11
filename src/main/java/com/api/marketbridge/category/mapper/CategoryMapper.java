@@ -6,15 +6,15 @@ import com.api.marketbridge.category.entity.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper()
+@Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface CategoryMapper {
     
-    CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
-    
+
     // Entity to DTO mapping
     CategoryResponse toResponse(Category category);
     
