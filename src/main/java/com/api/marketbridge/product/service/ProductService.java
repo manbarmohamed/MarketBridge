@@ -11,7 +11,7 @@ public interface ProductService {
     void deleteProduct(Long id);
     ProductResponse getProductById(Long id);
 
-    Page<ProductResponse> getAllProducts(Pageable pageable);
+    Page<ProductResponse> getAllProducts(int page, int size, String sortBy, String sortDir);
     Page<ProductResponse> getProductsByCategory(Long categoryId, Pageable pageable);
     Page<ProductResponse> getProductsBySeller(Long sellerId, Pageable pageable);
     Page<ProductResponse> searchProducts(String keyword, Pageable pageable);
