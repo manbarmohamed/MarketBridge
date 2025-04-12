@@ -31,6 +31,8 @@ public interface ProductMapper {
 
     List<ProductResponse> toResponseList(List<Product> productList);
 
+    void updateProductFromRequest(ProductRequest request, @MappingTarget Product product);
+
     @Named("categoryIdToCategory")
     default Category categoryIdToCategory(Long categoryId) {
         if (categoryId == null) {
