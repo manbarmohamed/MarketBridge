@@ -68,5 +68,6 @@ public class ProductController {
 
         Page<ProductResponse> productPage = productService.getProductsBySeller(sellerId, page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
+
     }
 }

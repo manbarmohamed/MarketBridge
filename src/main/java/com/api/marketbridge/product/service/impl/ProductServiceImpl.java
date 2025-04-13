@@ -105,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toResponse)
                 .toList();
         return productResponses.isEmpty() ? Page.empty() : new PageImpl<>(productResponses, pageable, productPage.getTotalElements());
+
     }
 
     @Override
