@@ -46,4 +46,16 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Page<ProductResponse>> getProductsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir) {
+
+        Page<ProductResponse> productPage = productService.getProductsByCategory(categoryId, page, size, sortBy, sortDir);
+        return ResponseEntity.ok(productPage);
+    }
 }
