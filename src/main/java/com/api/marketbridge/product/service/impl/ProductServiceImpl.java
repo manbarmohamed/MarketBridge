@@ -96,7 +96,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getProductsBySeller(Long sellerId, int page, int size, String sortBy, String sortDir) {
-        return null;
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Product> productPage = productRepository.findBySellerId(sellerId, pageable);
+        List<ProductResponse> productResponses = productPage.getContent()
+                .stream()
+                .map(productMapper::toResponse)
+                .toList();
+        return productResponses.isEmpty() ? Page.empty() : new PageImpl<>(productResponses, pageable, productPage.getTotalElements());
     }
 
     @Override

@@ -58,4 +58,15 @@ public class ProductController {
         Page<ProductResponse> productPage = productService.getProductsByCategory(categoryId, page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
     }
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<Page<ProductResponse>> getProductsBySeller(
+            @PathVariable Long sellerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir) {
+
+        Page<ProductResponse> productPage = productService.getProductsBySeller(sellerId, page, size, sortBy, sortDir);
+        return ResponseEntity.ok(productPage);
+    }
 }
