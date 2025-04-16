@@ -1,10 +1,14 @@
 package com.api.marketbridge.comment.dto;
 
-public class CommentResponse {
-    private Long id;
-    private String content;
-    private String timestamp;
+import lombok.Data;
 
-    private Long productId;
-    private Long userId;
+import java.time.LocalDateTime;
+
+@Data
+public class CommentResponse {
+    Long id;
+    String content;
+    LocalDateTime createdAt;
+    String authorFullName;
+    String productName;
 }

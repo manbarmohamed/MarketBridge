@@ -10,8 +10,10 @@ public interface CommentMapper {
     Comment toEntity(CommentRequest commentRequest);
 
     CommentRequest toDto(Comment comment);
+
     CommentResponse toResponse(Comment comment);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Comment partialUpdate(CommentRequest commentRequest, @MappingTarget Comment comment);
-}
+
+    }
