@@ -64,6 +64,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentResponse> getCommentsByProduct(Long productId) {
-        return List.of();
+        List<Comment> comments = commentRepository.findByProductId(productId);
+       return comments.stream()
+                .map(commentMapper::toResponse)
+                .toList();
     }
 }

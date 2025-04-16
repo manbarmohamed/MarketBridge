@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
@@ -30,5 +32,11 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable("id") Long id) {
         commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<CommentResponse>> getCommentsByProduct(@PathVariable("productId") Long productId) {
+        List<CommentResponse> responses = commentService.getCommentsByProduct(productId);
+        return ResponseEntity.ok(responses);
     }
 }
