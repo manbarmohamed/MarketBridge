@@ -99,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> productPage = productRepository.findBySellerId(sellerId, pageable);
+        Page<Product> productPage = productRepository.findByOwnerId(sellerId, pageable);
         List<ProductResponse> productResponses = productPage.getContent()
                 .stream()
                 .map(productMapper::toResponse)

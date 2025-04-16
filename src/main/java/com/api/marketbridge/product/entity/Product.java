@@ -30,7 +30,8 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    private LocalDateTime createdAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "category_id")
