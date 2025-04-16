@@ -1,6 +1,7 @@
 package com.api.marketbridge.user.entity;
 
 import com.api.marketbridge.product.entity.Product;
+import com.api.marketbridge.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,4 +14,8 @@ public class Seller extends User {
 
     @OneToMany(mappedBy = "owner")
     private List<Product> products;
+
+    public Seller() {
+        this.setRole(Role.SELLER);
+    }
 }
