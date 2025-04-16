@@ -11,6 +11,7 @@ public interface CommentMapper {
 
     CommentRequest toDto(Comment comment);
 
+    @Mapping(source = "product.name", target = "productName")
     CommentResponse toResponse(Comment comment);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
