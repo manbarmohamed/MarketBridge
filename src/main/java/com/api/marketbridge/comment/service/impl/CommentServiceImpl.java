@@ -6,9 +6,14 @@ import com.api.marketbridge.comment.entity.Comment;
 import com.api.marketbridge.comment.mapper.CommentMapper;
 import com.api.marketbridge.comment.repository.CommentRepository;
 import com.api.marketbridge.comment.service.CommentService;
+import com.api.marketbridge.product.entity.Product;
+import com.api.marketbridge.product.repository.ProductRepository;
+import com.api.marketbridge.user.entity.User;
+import com.api.marketbridge.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,10 +21,27 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     @Override
     public CommentResponse addComment(CommentRequest request) {
+        // First convert the request to entity (this will have null relationships)
         Comment comment = commentMapper.toEntity(request);
+
+        // Then manually set the relationships
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        comment.setProduct(product);
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        comment.setAuthor(user);
+
+        // Set creation timestamp
+        comment.setCreatedAt(LocalDateTime.now());
+
+        // Save and return
         Comment savedComment = commentRepository.save(comment);
         return commentMapper.toResponse(savedComment);
     }
@@ -35,7 +57,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Long id) {
-
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        commentRepository.delete(comment);
     }
 
     @Override

@@ -7,9 +7,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO for {@link com.api.marketbridge.comment.entity.CommentEntity}
- */
+
 @Entity
 @Data
 @NoArgsConstructor

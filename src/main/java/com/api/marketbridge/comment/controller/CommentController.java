@@ -6,10 +6,7 @@ import com.api.marketbridge.comment.dto.CommentResponse;
 import com.api.marketbridge.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,8 +21,14 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentResponse> updateComment(Long id, CommentRequest request) {
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable("id") Long id, CommentRequest request) {
         CommentResponse response = commentService.updateComment(id, request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable("id") Long id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
     }
 }
