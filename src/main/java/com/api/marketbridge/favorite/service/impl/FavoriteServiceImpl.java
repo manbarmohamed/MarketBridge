@@ -34,24 +34,37 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public FavoriteResponse addToFavorites(FavoriteRequest request) {
-        Product product = productRepository.findById(request.getProductId()).orElseThrow(
-                () -> new ResourceNotFoundException("Product not found")
-        );
-        if (product.getOwner().getId().equals(request.getBuyerId())) {
+        // Step 1: Get authenticated username
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // or email if that's your unique identifier
+
+        // Step 2: Fetch the Buyer using the username
+        Buyer buyer = buyerRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Authenticated buyer not found"));
+
+        // Step 3: Fetch the product
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        // Step 4: Prevent users from favoriting their own products
+        if (product.getOwner().getId().equals(buyer.getId())) {
             throw new IllegalArgumentException("You cannot favorite your own product");
         }
-        if (favoriteRepository.existsByUserIdAndProductId(request.getBuyerId(), request.getProductId())) {
+
+        // Step 5: Check for duplicates
+        if (favoriteRepository.existsByUserIdAndProductId(buyer.getId(), product.getId())) {
             throw new IllegalArgumentException("Product already in favorites");
         }
-        Buyer buyer = buyerRepository.findById(request.getBuyerId()).orElseThrow(
-                () -> new ResourceNotFoundException("Buyer not found")
-        );
-        Favorite favorite = favoriteMapper.toEntity(request);
-        favorite.setProduct(product);
+
+        // Step 6: Create and save the Favorite
+        Favorite favorite = new Favorite();
         favorite.setUser(buyer);
+        favorite.setProduct(product);
+
         favorite = favoriteRepository.save(favorite);
         return favoriteMapper.toDto(favorite);
     }
+
 
     @Override
     public void removeFavorite(Long favoriteId) {
