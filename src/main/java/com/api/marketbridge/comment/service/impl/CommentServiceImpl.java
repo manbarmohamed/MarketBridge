@@ -11,6 +11,8 @@ import com.api.marketbridge.product.repository.ProductRepository;
 import com.api.marketbridge.user.entity.User;
 import com.api.marketbridge.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,27 +26,49 @@ public class CommentServiceImpl implements CommentService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    @Override
-    public CommentResponse addComment(CommentRequest request) {
-        // First convert the request to entity (this will have null relationships)
-        Comment comment = commentMapper.toEntity(request);
+//    @Override
+//    public CommentResponse addComment(CommentRequest request) {
+//        // First convert the request to entity (this will have null relationships)
+//        Comment comment = commentMapper.toEntity(request);
+//
+//        // Then manually set the relationships
+//        Product product = productRepository.findById(request.getProductId())
+//                .orElseThrow(() -> new RuntimeException("Product not found"));
+//        comment.setProduct(product);
+//
+//        User user = userRepository.findById(request.getUserId())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//        comment.setAuthor(user);
+//
+//        // Set creation timestamp
+//        comment.setCreatedAt(LocalDateTime.now());
+//
+//        // Save and return
+//        Comment savedComment = commentRepository.save(comment);
+//        return commentMapper.toResponse(savedComment);
+//    }
+@Override
+public CommentResponse addComment(CommentRequest request) {
+    Comment comment = commentMapper.toEntity(request);
 
-        // Then manually set the relationships
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-        comment.setProduct(product);
+    // Fetch product
+    Product product = productRepository.findById(request.getProductId())
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+    comment.setProduct(product);
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        comment.setAuthor(user);
+    // ✅ Get currently authenticated user
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
 
-        // Set creation timestamp
-        comment.setCreatedAt(LocalDateTime.now());
+    User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+    comment.setAuthor(user);
 
-        // Save and return
-        Comment savedComment = commentRepository.save(comment);
-        return commentMapper.toResponse(savedComment);
-    }
+    comment.setCreatedAt(LocalDateTime.now());
+
+    Comment savedComment = commentRepository.save(comment);
+    return commentMapper.toResponse(savedComment);
+}
 
     @Override
     public CommentResponse updateComment(Long id, CommentRequest request) {
