@@ -33,4 +33,10 @@ public class FavoriteController {
         List<FavoriteResponse> favorites = favoriteService.getFavoritesByBuyer(buyerId);
         return ResponseEntity.ok(favorites);
     }
+
+    @GetMapping("/favorites/me")
+    public ResponseEntity<List<FavoriteResponse>> getMyFavorites() {
+        return ResponseEntity.ok(favoriteService.getFavoritesForAuthenticatedBuyer());
+    }
+
 }

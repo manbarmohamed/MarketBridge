@@ -9,4 +9,5 @@ public interface FavoriteService {
     FavoriteResponse addToFavorites(FavoriteRequest request);
     void removeFavorite(Long favoriteId);
     List<FavoriteResponse> getFavoritesByBuyer(Long buyerId);
+    List<FavoriteResponse> getFavoritesForAuthenticatedBuyer();
 }

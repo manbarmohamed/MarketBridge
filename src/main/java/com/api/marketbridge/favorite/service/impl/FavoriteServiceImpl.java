@@ -10,8 +10,14 @@ import com.api.marketbridge.favorite.service.FavoriteService;
 import com.api.marketbridge.product.entity.Product;
 import com.api.marketbridge.product.repository.ProductRepository;
 import com.api.marketbridge.user.entity.Buyer;
+import com.api.marketbridge.user.entity.User;
 import com.api.marketbridge.user.repository.BuyerRepository;
+import com.api.marketbridge.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +30,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final FavoriteMapper favoriteMapper;
     private final ProductRepository productRepository;
     private final BuyerRepository buyerRepository;
+    private final UserRepository userRepository;
 
     @Override
     public FavoriteResponse addToFavorites(FavoriteRequest request) {
@@ -60,6 +67,31 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (favorites.isEmpty()) {
             throw new ResourceNotFoundException("No favorites found for this buyer");
         }
+        return favorites.stream()
+                .map(favoriteMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<FavoriteResponse> getFavoritesForAuthenticatedBuyer() {
+        // Get username from the SecurityContext
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Fetch user
+        User buyer = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Authenticated user not found"));
+
+        // Optional: Check if the user is a Buyer (based on your inheritance model)
+        if (!(buyer instanceof Buyer)) {
+            throw new AccessDeniedException("Only buyers can access this resource.");
+        }
+
+        List<Favorite> favorites = favoriteRepository.findByUserId(buyer.getId());
+        if (favorites.isEmpty()) {
+            throw new ResourceNotFoundException("No favorites found for this buyer");
+        }
+
         return favorites.stream()
                 .map(favoriteMapper::toDto)
                 .toList();
