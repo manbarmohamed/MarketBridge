@@ -9,7 +9,8 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-
+@Builder
+@AllArgsConstructor
 public class Buyer extends User {
 
     @OneToMany(mappedBy = "sender")
@@ -24,4 +25,5 @@ public class Buyer extends User {
     public Buyer(){
         this.setRole(Role.BUYER);
     }
+
 }
