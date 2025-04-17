@@ -56,6 +56,12 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public List<FavoriteResponse> getFavoritesByBuyer(Long buyerId) {
-        return List.of();
+        List<Favorite> favorites = favoriteRepository.findByUserId(buyerId);
+        if (favorites.isEmpty()) {
+            throw new ResourceNotFoundException("No favorites found for this buyer");
+        }
+        return favorites.stream()
+                .map(favoriteMapper::toDto)
+                .toList();
     }
 }

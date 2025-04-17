@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/favorites")
@@ -24,5 +26,11 @@ public class FavoriteController {
     public ResponseEntity<Void> removeFromFavorites(@PathVariable("id") Long id) {
         favoriteService.removeFavorite(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buyer/{buyerId}")
+    public ResponseEntity<List<FavoriteResponse>> getFavoritesByBuyer(@PathVariable("buyerId") Long buyerId) {
+        List<FavoriteResponse> favorites = favoriteService.getFavoritesByBuyer(buyerId);
+        return ResponseEntity.ok(favorites);
     }
 }
