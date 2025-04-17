@@ -6,9 +6,7 @@ import com.api.marketbridge.favorite.dto.FavoriteResponse;
 import com.api.marketbridge.favorite.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,5 +19,10 @@ public class FavoriteController {
     public ResponseEntity<FavoriteResponse> addToFavorites(FavoriteRequest request) {
         FavoriteResponse response = favoriteService.addToFavorites(request);
         return ResponseEntity.ok(response);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removeFromFavorites(@PathVariable("id") Long id) {
+        favoriteService.removeFavorite(id);
+        return ResponseEntity.noContent().build();
     }
 }
