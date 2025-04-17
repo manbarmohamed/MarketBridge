@@ -22,6 +22,7 @@ public class ProductController {
     public ProductResponse createProduct(@RequestBody ProductRequest request) {
         return productService.createProduct(request);
     }
+
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
@@ -34,7 +35,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id){
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
@@ -60,6 +61,7 @@ public class ProductController {
         Page<ProductResponse> productPage = productService.getProductsByCategory(categoryId, page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
     }
+
     @GetMapping("/seller/{sellerId}")
     public ResponseEntity<Page<ProductResponse>> getProductsBySeller(
             @PathVariable Long sellerId,

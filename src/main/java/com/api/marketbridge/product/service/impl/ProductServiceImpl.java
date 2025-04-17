@@ -29,9 +29,6 @@ public class ProductServiceImpl implements ProductService {
     private final SellerRepository sellerRepository;
 
 
-
-
-
     @Override
     public ProductResponse createProduct(ProductRequest request) {
         Product product = productMapper.toEntity(request);
@@ -43,7 +40,6 @@ public class ProductServiceImpl implements ProductService {
         product.setOwner(seller);
         product.setStatus(ProductStatus.PENDING);
         Product savedProduct = productRepository.save(product);
-
 
 
         return productMapper.toResponse(savedProduct);
@@ -117,7 +113,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> searchProducts(String keyword) {
-        return null;
+        List<Product> products = productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+        return products.stream()
+                .map(productMapper::toResponse)
+                .toList();
     }
 
 }
