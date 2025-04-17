@@ -5,6 +5,8 @@ import com.api.marketbridge.product.dto.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface ProductService {
     ProductResponse createProduct(ProductRequest request);
     ProductResponse updateProduct(Long id, ProductRequest request);
@@ -14,5 +16,5 @@ public interface ProductService {
     Page<ProductResponse> getAllProducts(int page, int size, String sortBy, String sortDir);
     Page<ProductResponse> getProductsByCategory(Long categoryId, int page, int size, String sortBy, String sortDir);
     Page<ProductResponse> getProductsBySeller(Long sellerId, int page, int size, String sortBy, String sortDir);
-    Page<ProductResponse> searchProducts(String keyword, Pageable pageable);
+    List<ProductResponse> searchProducts(String keyword);
 }

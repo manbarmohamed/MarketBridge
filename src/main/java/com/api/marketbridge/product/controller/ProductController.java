@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
@@ -69,5 +71,13 @@ public class ProductController {
         Page<ProductResponse> productPage = productService.getProductsBySeller(sellerId, page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
 
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponse>> searchProducts(
+            @RequestParam("keyword") String keyword
+    ) {
+        List<ProductResponse> results = productService.searchProducts(keyword);
+        return ResponseEntity.ok(results);
     }
 }

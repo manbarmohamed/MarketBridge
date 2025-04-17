@@ -28,23 +28,30 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final SellerRepository sellerRepository;
 
+
+
+
+
     @Override
     public ProductResponse createProduct(ProductRequest request) {
         Product product = productMapper.toEntity(request);
-        Seller seller = sellerRepository.findById(request.getSellerId()).orElseThrow(()->
+        Seller seller = sellerRepository.findById(request.getSellerId()).orElseThrow(() ->
                 new ResourceNotFoundException("Seller not found"));
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(()->
+        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() ->
                 new ResourceNotFoundException("Category not found"));
         product.setCategory(category);
         product.setOwner(seller);
         product.setStatus(ProductStatus.PENDING);
         Product savedProduct = productRepository.save(product);
+
+
+
         return productMapper.toResponse(savedProduct);
     }
 
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest request) {
-        Product product = productRepository.findById(id).orElseThrow(()->
+        Product product = productRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Product not found")
         );
         productMapper.updateProductFromRequest(request, product);
@@ -62,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse getProductById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(()->
+        Product product = productRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Product not found"));
         return productMapper.toResponse(product);
     }
@@ -109,7 +116,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> searchProducts(String keyword, Pageable pageable) {
+    public List<ProductResponse> searchProducts(String keyword) {
         return null;
     }
+
 }
