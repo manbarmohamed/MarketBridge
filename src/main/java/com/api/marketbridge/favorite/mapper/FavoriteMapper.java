@@ -16,11 +16,9 @@ public interface FavoriteMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "user", source = "buyerId", qualifiedByName = "mapBuyer")
     @Mapping(target = "product", source = "productId", qualifiedByName = "mapProduct")
     Favorite toEntity(FavoriteRequest favoriteRequest);
 
-    @Mapping(target = "buyerId", source = "user.id")
     @Mapping(target = "product", source = "product")
     FavoriteResponse toDto(Favorite favorite);
 
