@@ -4,6 +4,7 @@ package com.api.marketbridge.product.service.impl;
 import com.api.marketbridge.category.entity.Category;
 import com.api.marketbridge.category.repository.CategoryRepository;
 import com.api.marketbridge.commun.ResourceNotFoundException;
+import com.api.marketbridge.image.service.ImageService;
 import com.api.marketbridge.product.dto.ProductRequest;
 import com.api.marketbridge.product.dto.ProductResponse;
 import com.api.marketbridge.product.entity.Product;
@@ -13,6 +14,7 @@ import com.api.marketbridge.product.repository.ProductRepository;
 import com.api.marketbridge.product.service.ProductService;
 import com.api.marketbridge.user.entity.Seller;
 import com.api.marketbridge.user.repository.SellerRepository;
+import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
     private final SellerRepository sellerRepository;
+    private final ImageService imageService;
 
 
     @Override
@@ -117,6 +120,29 @@ public class ProductServiceImpl implements ProductService {
         return products.stream()
                 .map(productMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public ProductResponse uploadImage(Long productId, String imageUrl) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new ResourceNotFoundException("Product not found"));
+        if(product.getImageUrl() != null) {
+            String publicId = extractPublicIdFromUrl(product.getImageUrl());
+            try {
+                imageService.deleteImage(publicId);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to delete old image", e);
+            }
+        }
+        product.setImageUrl(imageUrl);
+        Product updatedProduct = productRepository.save(product);
+        return productMapper.toResponse(updatedProduct);
+    }
+
+    private String extractPublicIdFromUrl(String url) {
+        if (url == null) return null;
+        String[] parts = url.split("/");
+        return parts[parts.length - 1].split("\\.")[0];
     }
 
 }
