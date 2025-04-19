@@ -7,7 +7,9 @@ spring:
       password: admin
       driver-class-name: org.postgresql.Driver
   elasticsearch:
-    uris: http://localhost:9200
+    uris: localhost:9300
+    connection-timeout: 30s
+    socket-timeout: 30s
   jpa:
       hibernate:
         ddl-auto: update  # use 'validate' or 'none' in production
@@ -16,6 +18,13 @@ spring:
         hibernate:
           format_sql: true
           dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  management:
+    health:
+      elasticsearch:
+        enabled: true
+        response-timeout: 10s
+        indices: [ "products" ]
 
 
   jackson:
