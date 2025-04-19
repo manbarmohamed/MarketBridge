@@ -8,6 +8,7 @@ import com.api.marketbridge.image.service.ImageService;
 import com.api.marketbridge.product.dto.ProductRequest;
 import com.api.marketbridge.product.dto.ProductResponse;
 import com.api.marketbridge.product.entity.Product;
+import com.api.marketbridge.product.entity.ProductImage;
 import com.api.marketbridge.product.enums.ProductStatus;
 import com.api.marketbridge.product.mapper.ProductMapper;
 import com.api.marketbridge.product.repository.ProductRepository;
@@ -15,6 +16,7 @@ import com.api.marketbridge.product.service.ProductService;
 import com.api.marketbridge.user.entity.Seller;
 import com.api.marketbridge.user.repository.SellerRepository;
 import io.jsonwebtoken.io.IOException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -137,6 +139,26 @@ public class ProductServiceImpl implements ProductService {
         product.setImageUrl(imageUrl);
         Product updatedProduct = productRepository.save(product);
         return productMapper.toResponse(updatedProduct);
+    }
+
+    @Override
+    @Transactional
+    public ProductResponse uploadMultipleImages(Long productId, List<String> imageUrls) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        List<ProductImage> productImages = imageUrls.stream()
+                .map(url -> {
+                    ProductImage image = new ProductImage();
+                    image.setUrl(url);
+                    image.setProduct(product);
+                    return image;
+                }).toList();
+
+        product.getImages().addAll(productImages);
+        productRepository.save(product); // this will cascade save images
+
+        return productMapper.toResponse(product);
     }
 
     private String extractPublicIdFromUrl(String url) {

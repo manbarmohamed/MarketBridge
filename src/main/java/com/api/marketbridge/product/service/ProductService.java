@@ -18,4 +18,5 @@ public interface ProductService {
     Page<ProductResponse> getProductsBySeller(Long sellerId, int page, int size, String sortBy, String sortDir);
     List<ProductResponse> searchProducts(String keyword);
     ProductResponse uploadImage(Long productId, String imageUrl);
+    ProductResponse uploadMultipleImages(Long productId, List<String> imageUrls);
 }
