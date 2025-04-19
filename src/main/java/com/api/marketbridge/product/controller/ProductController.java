@@ -112,6 +112,27 @@ public class ProductController {
         }
     }
 
+    @PutMapping(value = "/{id}/upload-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ProductResponse uploadProductImages(
+            @PathVariable Long id,
+            @RequestParam("files") List<MultipartFile> files) {
+
+        for (MultipartFile file : files) {
+            validateFile(file);
+        }
+
+        try {
+            List<String> imageUrls = files.stream()
+                    .map(file -> imageService.uploadImage(file)
+                            .orElseThrow(() -> new ResponseStatusException(
+                                    HttpStatus.INTERNAL_SERVER_ERROR, "Image upload failed")))
+                    .toList();
+
+            return productService.uploadMultipleImages(id, imageUrls);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload images: " + e.getMessage());
+        }
+    }
 
 
     private void validateFile(MultipartFile file) {
