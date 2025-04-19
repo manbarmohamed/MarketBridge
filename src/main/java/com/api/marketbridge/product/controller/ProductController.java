@@ -1,12 +1,14 @@
 package com.api.marketbridge.product.controller;
 
 
+import com.api.marketbridge.image.service.ImageService;
 import com.api.marketbridge.product.dto.ProductRequest;
 import com.api.marketbridge.product.dto.ProductResponse;
 import com.api.marketbridge.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +22,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ImageService imageService;
 
     @PostMapping(produces = "application/json")
     public ProductResponse createProduct(@RequestBody ProductRequest request) {
@@ -85,6 +88,31 @@ public class ProductController {
         List<ProductResponse> results = productService.searchProducts(keyword);
         return ResponseEntity.ok(results);
     }
+
+    @PutMapping(value = "/{id}/upload-image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ProductResponse uploadProductImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        validateFile(file);
+
+        try {
+            String imageUrl = imageService.uploadImage(file)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Image upload failed"
+                    ));
+            return productService.uploadImage(id, imageUrl);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to process image: " + e.getMessage(),
+                    e
+            );
+        }
+    }
+
+
 
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
