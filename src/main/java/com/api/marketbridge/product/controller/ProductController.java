@@ -6,8 +6,11 @@ import com.api.marketbridge.product.dto.ProductResponse;
 import com.api.marketbridge.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -81,5 +84,23 @@ public class ProductController {
     ) {
         List<ProductResponse> results = productService.searchProducts(keyword);
         return ResponseEntity.ok(results);
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "File cannot be empty");
+        }
+
+        String contentType = file.getContentType();
+        if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Unsupported file type. Only JPEG/PNG allowed");
+        }
+
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "File size exceeds maximum limit of 5MB");
+        }
     }
 }
