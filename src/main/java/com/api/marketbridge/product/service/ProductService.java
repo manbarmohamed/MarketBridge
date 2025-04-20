@@ -17,6 +17,12 @@ public interface ProductService {
     Page<ProductResponse> getProductsByCategory(Long categoryId, int page, int size, String sortBy, String sortDir);
     Page<ProductResponse> getProductsBySeller(Long sellerId, int page, int size, String sortBy, String sortDir);
     List<ProductResponse> searchProducts(String keyword);
+
     ProductResponse uploadImage(Long productId, String imageUrl);
     ProductResponse uploadMultipleImages(Long productId, List<String> imageUrls);
+
+    ProductResponse markProductAsSold(Long productId);
+    ProductResponse markProductAsAvailable(Long productId);
+    List<ProductResponse> getProductsByStatus(String status);
+
 }

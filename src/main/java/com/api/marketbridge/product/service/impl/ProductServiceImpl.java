@@ -161,6 +161,21 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toResponse(product);
     }
 
+    @Override
+    public ProductResponse markProductAsSold(Long productId) {
+        return null;
+    }
+
+    @Override
+    public ProductResponse markProductAsAvailable(Long productId) {
+        return null;
+    }
+
+    @Override
+    public List<ProductResponse> getProductsByStatus(String status) {
+        return List.of();
+    }
+
     private String extractPublicIdFromUrl(String url) {
         if (url == null) return null;
         String[] parts = url.split("/");
