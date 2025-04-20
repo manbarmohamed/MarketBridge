@@ -1,6 +1,7 @@
 package com.api.marketbridge.product.repository;
 
 import com.api.marketbridge.product.entity.Product;
+import com.api.marketbridge.product.enums.ProductStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByOwnerId(Long sellerId, Pageable pageable);
     List<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
 
+    List<Product> findByStatus(ProductStatus productStatus);
 }

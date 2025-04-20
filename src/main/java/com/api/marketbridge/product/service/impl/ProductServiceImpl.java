@@ -172,12 +172,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse markProductAsAvailable(Long productId) {
-        return null;
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new ResourceNotFoundException("Product not found"));
+        product.setStatus(ProductStatus.AVAILABLE);
+        return productMapper.toResponse(product);
     }
 
     @Override
     public List<ProductResponse> getProductsByStatus(String status) {
-        return List.of();
+        List<Product> products = productRepository.findByStatus(ProductStatus.valueOf(status));
+        return products.stream()
+                .map(productMapper::toResponse)
+                .toList();
     }
 
     private String extractPublicIdFromUrl(String url) {
