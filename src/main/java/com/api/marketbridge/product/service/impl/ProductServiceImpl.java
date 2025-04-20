@@ -163,7 +163,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse markProductAsSold(Long productId) {
-        return null;
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new ResourceNotFoundException("Product not found"));
+        product.setStatus(ProductStatus.SOLD);
+        Product updatedProduct = productRepository.save(product);
+        return productMapper.toResponse(updatedProduct);
     }
 
     @Override
