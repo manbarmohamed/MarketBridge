@@ -134,6 +134,19 @@ public class ProductController {
         }
     }
 
+    @PutMapping("/{id}/mark-sold")
+    public ResponseEntity<ProductResponse> markProductAsSold(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.markProductAsSold(id));
+    }
+    @PutMapping("/{id}/mark-available")
+    public ResponseEntity<ProductResponse> markProductAsAvailable(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.markProductAsAvailable(id));
+    }
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<ProductResponse>> getProductsByStatus(@PathVariable String status) {
+        List<ProductResponse> products = productService.getProductsByStatus(status);
+        return ResponseEntity.ok(products);
+    }
 
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
