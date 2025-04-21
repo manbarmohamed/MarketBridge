@@ -7,6 +7,7 @@ import com.api.marketbridge.category.entity.Category;
 import com.api.marketbridge.category.mapper.CategoryMapper;
 import com.api.marketbridge.category.repository.CategoryRepository;
 import com.api.marketbridge.category.service.impl.CategoryServiceImpl;
+import com.api.marketbridge.commun.ResourceAlreadyExistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceImplTest {
@@ -63,5 +63,17 @@ public class CategoryServiceImplTest {
         verify(categoryRepository).save(category);
         verify(categoryMapper).toResponse(category);
 
+    }
+
+    @Test
+    void createCategory_ThrowsExceptionWhenNameAlreadyExists(){
+        when(categoryMapper.toEntity(categoryRequest)).thenReturn(category);
+        when(categoryRepository.existsByName("Electronics")).thenReturn(true);
+
+        assertThrows(ResourceAlreadyExistException.class, () -> {
+            categoryService.createCategory(categoryRequest);
+        });
+
+        verify(categoryRepository, never()).save(any());
     }
 }
