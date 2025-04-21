@@ -115,5 +115,16 @@ public class CategoryServiceImplTest {
         verify(categoryRepository).save(category);
     }
 
+    @Test
+    void deleteCategory_success() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        doNothing().when(categoryRepository).delete(category);
+
+        categoryService.deleteCategory(1L);
+
+        verify(categoryRepository).delete(category);
+    }
+
+
 
 }
