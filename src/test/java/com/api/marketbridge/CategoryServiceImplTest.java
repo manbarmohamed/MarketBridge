@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,6 +124,20 @@ public class CategoryServiceImplTest {
         categoryService.deleteCategory(1L);
 
         verify(categoryRepository).delete(category);
+    }
+
+    @Test
+    void getAllCategories_returnsList() {
+        List<Category> categories = List.of(category);
+        List<CategoryResponse> responses = List.of(categoryResponse);
+
+        when(categoryRepository.findAll()).thenReturn(categories);
+        when(categoryMapper.toResponseList(categories)).thenReturn(responses);
+
+        List<CategoryResponse> result = categoryService.getAllCategories();
+
+        assertEquals(1, result.size());
+        assertEquals("Electronics", result.get(0).getName());
     }
 
 
