@@ -101,5 +101,19 @@ public class CategoryServiceImplTest {
         });
     }
 
+    @Test
+    void updateCategory_success() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        doNothing().when(categoryMapper).updateEntityFromRequest(categoryRequest, category);
+        when(categoryRepository.save(category)).thenReturn(category);
+        when(categoryMapper.toResponse(category)).thenReturn(categoryResponse);
+
+        CategoryResponse result = categoryService.updateCategory(1L, categoryRequest);
+
+        assertNotNull(result);
+        assertEquals("Electronics", result.getName());
+        verify(categoryRepository).save(category);
+    }
+
 
 }
