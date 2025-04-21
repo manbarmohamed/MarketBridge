@@ -8,6 +8,7 @@ import com.api.marketbridge.category.mapper.CategoryMapper;
 import com.api.marketbridge.category.repository.CategoryRepository;
 import com.api.marketbridge.category.service.impl.CategoryServiceImpl;
 import com.api.marketbridge.commun.ResourceAlreadyExistException;
+import com.api.marketbridge.commun.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,5 +91,15 @@ public class CategoryServiceImplTest {
         assertEquals(1L, result.getId());
         verify(categoryRepository).findById(1L);
     }
+
+    @Test
+    void getCategoryById_notFound_throwsException() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            categoryService.getCategoryById(1L);
+        });
+    }
+
 
 }
