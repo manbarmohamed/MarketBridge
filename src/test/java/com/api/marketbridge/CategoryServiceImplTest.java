@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -76,4 +78,17 @@ public class CategoryServiceImplTest {
 
         verify(categoryRepository, never()).save(any());
     }
+
+    @Test
+    void getCategoryById_success() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(categoryMapper.toResponse(category)).thenReturn(categoryResponse);
+
+        CategoryResponse result = categoryService.getCategoryById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(categoryRepository).findById(1L);
+    }
+
 }
