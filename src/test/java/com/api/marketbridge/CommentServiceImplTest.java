@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -164,6 +165,42 @@ class CommentServiceImplTest {
         verify(commentMapper).partialUpdate(updateRequest, existingComment);
         verify(commentRepository).save(existingComment);
         verify(commentMapper).toResponse(updatedComment);
+    }
+
+
+    @Test
+    void testGetCommentsByProduct_Success() {
+        Long productId = 10L;
+
+        Comment comment1 = new Comment();
+        comment1.setId(1L);
+        Comment comment2 = new Comment();
+        comment2.setId(2L);
+
+        CommentResponse response1 = new CommentResponse();
+        response1.setId(1L);
+        CommentResponse response2 = new CommentResponse();
+        response2.setId(2L);
+
+        List<Comment> commentList = List.of(comment1, comment2);
+        List<CommentResponse> responseList = List.of(response1, response2);
+
+        when(commentRepository.findByProductId(productId)).thenReturn(commentList);
+        when(commentMapper.toResponse(comment1)).thenReturn(response1);
+        when(commentMapper.toResponse(comment2)).thenReturn(response2);
+
+        // Call
+        List<CommentResponse> result = commentService.getCommentsByProduct(productId);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(1L, result.get(0).getId());
+        assertEquals(2L, result.get(1).getId());
+
+        // Verify
+        verify(commentRepository).findByProductId(productId);
+        verify(commentMapper).toResponse(comment1);
+        verify(commentMapper).toResponse(comment2);
     }
 
 }
