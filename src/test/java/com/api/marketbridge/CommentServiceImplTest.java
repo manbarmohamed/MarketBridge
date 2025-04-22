@@ -75,4 +75,31 @@ class CommentServiceImplTest {
         response.setId(100L);
     }
 
+    @Test
+    void testAddComment_Success() {
+        // Set up SecurityContextHolder mock
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("john.doe");
+        SecurityContextHolder.setContext(securityContext);
+
+        // Mock interactions
+        when(commentMapper.toEntity(request)).thenReturn(comment);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(userRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
+        when(commentRepository.save(comment)).thenReturn(savedComment);
+        when(commentMapper.toResponse(savedComment)).thenReturn(response);
+
+        // Call service
+        CommentResponse result = commentService.addComment(request);
+
+        // Verify
+        assertNotNull(result);
+        assertEquals(100L, result.getId());
+
+        verify(commentMapper).toEntity(request);
+        verify(productRepository).findById(1L);
+        verify(userRepository).findByUsername("john.doe");
+        verify(commentRepository).save(comment);
+        verify(commentMapper).toResponse(savedComment);
+    }
 }
