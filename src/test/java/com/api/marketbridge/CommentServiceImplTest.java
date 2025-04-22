@@ -121,4 +121,49 @@ class CommentServiceImplTest {
         verify(commentRepository).delete(comment);
     }
 
+    @Test
+    void testUpdateComment_Success() {
+        Long commentId = 1L;
+
+        Comment existingComment = new Comment();
+        existingComment.setId(commentId);
+
+        CommentRequest updateRequest = new CommentRequest();
+        updateRequest.setContent("Updated content");
+
+        Comment updatedComment = new Comment();
+        updatedComment.setId(commentId);
+        updatedComment.setContent("Updated content");
+
+        CommentResponse expectedResponse = new CommentResponse();
+        expectedResponse.setId(commentId);
+        expectedResponse.setContent("Updated content");
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
+
+        // Fix: Assume partialUpdate is void
+        doAnswer(invocation -> {
+            CommentRequest requestArg = invocation.getArgument(0);
+            Comment commentArg = invocation.getArgument(1);
+            commentArg.setContent(requestArg.getContent());
+            return null;
+        }).when(commentMapper).partialUpdate(any(CommentRequest.class), any(Comment.class));
+
+        when(commentRepository.save(existingComment)).thenReturn(updatedComment);
+        when(commentMapper.toResponse(updatedComment)).thenReturn(expectedResponse);
+
+        // Call service
+        CommentResponse result = commentService.updateComment(commentId, updateRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Updated content", result.getContent());
+
+        // Verify
+        verify(commentRepository).findById(commentId);
+        verify(commentMapper).partialUpdate(updateRequest, existingComment);
+        verify(commentRepository).save(existingComment);
+        verify(commentMapper).toResponse(updatedComment);
+    }
+
 }
