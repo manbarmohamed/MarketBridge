@@ -1,19 +1,40 @@
 package com.api.marketbridge;
 
+import com.api.marketbridge.comment.dto.CommentRequest;
+import com.api.marketbridge.comment.dto.CommentResponse;
+import com.api.marketbridge.comment.entity.Comment;
 import com.api.marketbridge.comment.mapper.CommentMapper;
 import com.api.marketbridge.comment.repository.CommentRepository;
 import com.api.marketbridge.comment.service.impl.CommentServiceImpl;
+import com.api.marketbridge.product.entity.Product;
 import com.api.marketbridge.product.repository.ProductRepository;
+import com.api.marketbridge.user.entity.User;
 import com.api.marketbridge.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-public class CommentServiceImplTest {
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+class CommentServiceImplTest {
 
     @Mock
     private CommentRepository commentRepository;
+
+    @Mock
+    private CommentMapper commentMapper;
 
     @Mock
     private ProductRepository productRepository;
@@ -22,13 +43,36 @@ public class CommentServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private CommentMapper commentMapper;
+    private Authentication authentication;
+
+    @Mock
+    private SecurityContext securityContext;
 
     @InjectMocks
     private CommentServiceImpl commentService;
 
+    private CommentRequest request;
+    private Comment comment;
+    private Comment savedComment;
+    private Product product;
+    private User user;
+    private CommentResponse response;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        request = new CommentRequest();
+        request.setProductId(1L);
+        request.setContent("Nice product!");
+
+        product = new Product(); // Minimal setup; fill as needed
+        user = mock(User.class); // Abstract class, mock it
+
+        comment = new Comment();
+        savedComment = new Comment();
+        savedComment.setId(100L);
+
+        response = new CommentResponse();
+        response.setId(100L);
     }
+
 }
