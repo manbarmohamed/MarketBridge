@@ -102,4 +102,23 @@ class CommentServiceImplTest {
         verify(commentRepository).save(comment);
         verify(commentMapper).toResponse(savedComment);
     }
+
+    @Test
+    void testDeleteComment_Success() {
+        Long commentId = 2L;
+
+        Comment comment = new Comment();
+        comment.setId(commentId);
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        doNothing().when(commentRepository).delete(comment);
+
+        // Call
+        commentService.deleteComment(commentId);
+
+        // Verify
+        verify(commentRepository).findById(commentId);
+        verify(commentRepository).delete(comment);
+    }
+
 }
