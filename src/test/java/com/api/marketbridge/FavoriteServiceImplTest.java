@@ -15,7 +15,9 @@ import com.api.marketbridge.user.repository.BuyerRepository;
 import com.api.marketbridge.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -28,23 +30,33 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class FavoriteServiceImplTest {
+
+    @Mock
+    private FavoriteRepository favoriteRepository; // example dependency
+
+    @Mock
+    private ProductRepository productRepository; // example dependency
 
     @InjectMocks
     private FavoriteServiceImpl favoriteService;
 
-    @Mock private FavoriteRepository favoriteRepository;
-    @Mock private FavoriteMapper favoriteMapper;
-    @Mock private ProductRepository productRepository;
-    @Mock private BuyerRepository buyerRepository;
-    @Mock private UserRepository userRepository;
-
-    @Mock private SecurityContext securityContext;
-    @Mock private Authentication authentication;
+    private Product sampleProduct;
+    private Favorite sampleFavorite;
 
     @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-        SecurityContextHolder.setContext(securityContext);
+    void setUp() {
+        // Initialize sample data objects used in tests
+        sampleProduct = new Product();
+        sampleProduct.setId(1L);
+        sampleProduct.setName("Sample Product");
+        // set other fields as needed
+
+        sampleFavorite = new Favorite();
+        sampleFavorite.setId(1L);
+        sampleFavorite.setProduct(sampleProduct);
+        // set other fields as needed
     }
+
 }
