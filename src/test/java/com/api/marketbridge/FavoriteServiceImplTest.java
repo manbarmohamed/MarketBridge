@@ -98,4 +98,17 @@ public class FavoriteServiceImplTest {
         assertNotNull(response);
         verify(favoriteRepository).save(any(Favorite.class));
     }
+
+    @Test
+    void addToFavorites_BuyerNotFound() {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(authentication.getName()).thenReturn("testuser");
+        when(buyerRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UsernameNotFoundException.class, () -> favoriteService.addToFavorites(favoriteRequest));
+        verify(favoriteRepository, never()).save(any(Favorite.class));
+    }
 }
