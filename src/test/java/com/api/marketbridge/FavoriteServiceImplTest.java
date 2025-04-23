@@ -10,6 +10,7 @@ import com.api.marketbridge.favorite.service.impl.FavoriteServiceImpl;
 import com.api.marketbridge.product.entity.Product;
 import com.api.marketbridge.product.repository.ProductRepository;
 import com.api.marketbridge.user.entity.Buyer;
+import com.api.marketbridge.user.entity.Seller;
 import com.api.marketbridge.user.entity.User;
 import com.api.marketbridge.user.repository.BuyerRepository;
 import com.api.marketbridge.user.repository.UserRepository;
@@ -28,35 +29,73 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FavoriteServiceImplTest {
 
     @Mock
-    private FavoriteRepository favoriteRepository; // example dependency
-
+    private FavoriteRepository favoriteRepository;
     @Mock
-    private ProductRepository productRepository; // example dependency
+    private FavoriteMapper favoriteMapper;
+    @Mock
+    private ProductRepository productRepository;
+    @Mock
+    private BuyerRepository buyerRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private FavoriteServiceImpl favoriteService;
 
+    private FavoriteRequest favoriteRequest;
     private Product sampleProduct;
+    private Buyer sampleBuyer;
+    private Seller sampleSeller;
     private Favorite sampleFavorite;
 
     @BeforeEach
     void setUp() {
-        // Initialize sample data objects used in tests
+        // Initialize sample data
+        favoriteRequest = new FavoriteRequest();
+        favoriteRequest.setProductId(1L);
+
+        sampleSeller = new Seller();
+        sampleSeller.setId(2L);
+
         sampleProduct = new Product();
         sampleProduct.setId(1L);
         sampleProduct.setName("Sample Product");
-        // set other fields as needed
+        sampleProduct.setOwner(sampleSeller);
+
+        sampleBuyer = new Buyer();
+        sampleBuyer.setId(3L);
+        sampleBuyer.setUsername("testuser");
 
         sampleFavorite = new Favorite();
-        sampleFavorite.setId(1L);
+        sampleFavorite.setId(10L);
+        sampleFavorite.setUser(sampleBuyer);
         sampleFavorite.setProduct(sampleProduct);
-        // set other fields as needed
     }
 
+    @Test
+    void addToFavorites_Success() {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(authentication.getName()).thenReturn("testuser");
+        when(buyerRepository.findByUsername("testuser")).thenReturn(Optional.of(sampleBuyer));
+        when(productRepository.findById(favoriteRequest.getProductId())).thenReturn(Optional.of(sampleProduct));
+        when(favoriteRepository.existsByUserIdAndProductId(sampleBuyer.getId(), sampleProduct.getId())).thenReturn(false);
+        when(favoriteRepository.save(any(Favorite.class))).thenReturn(sampleFavorite);
+        when(favoriteMapper.toDto(sampleFavorite)).thenReturn(new FavoriteResponse());
+
+        // Act
+        FavoriteResponse response = favoriteService.addToFavorites(favoriteRequest);
+
+        // Assert
+        assertNotNull(response);
+        verify(favoriteRepository).save(any(Favorite.class));
+    }
 }
