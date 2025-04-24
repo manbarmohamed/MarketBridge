@@ -354,4 +354,20 @@ public class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals(ProductStatus.SOLD, product.getStatus());
     }
+
+    @Test
+    @DisplayName("Should mark product as available")
+    void markProductAsAvailable_Success() {
+        // Arrange
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        ProductResponse result = productService.markProductAsAvailable(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(ProductStatus.AVAILABLE, product.getStatus());
+    }
 }
