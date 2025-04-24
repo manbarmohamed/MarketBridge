@@ -304,4 +304,21 @@ public class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.size());
     }
+
+    @Test
+    @DisplayName("Should upload image successfully")
+    void uploadImage_Success() {
+        // Arrange
+        product.setImageUrl("old-image-url.jpg");
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        ProductResponse result = productService.uploadImage(1L, "new-image-url.jpg");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("new-image-url.jpg", product.getImageUrl());
+    }
 }
