@@ -252,4 +252,22 @@ public class ProductServiceImplTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    @DisplayName("Should get products by category")
+    void getProductsByCategory_Success() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+        when(productRepository.findByCategoryId(anyLong(), any(Pageable.class))).thenReturn(productPage);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        Page<ProductResponse> result = productService.getProductsByCategory(1L, 0, 10, "id", "asc");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+    }
 }
