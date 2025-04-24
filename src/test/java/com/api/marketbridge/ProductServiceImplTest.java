@@ -192,4 +192,29 @@ public class ProductServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> productService.deleteProduct(1L));
         verify(productRepository, never()).delete(any(Product.class));
     }
+
+    @Test
+    @DisplayName("Should get product by ID successfully")
+    void getProductById_Success() {
+        // Arrange
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        ProductResponse result = productService.getProductById(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(productResponse.getId(), result.getId());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when getting non-existent product")
+    void getProductById_ProductNotFound() {
+        // Arrange
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> productService.getProductById(1L));
+    }
 }
