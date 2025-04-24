@@ -339,4 +339,19 @@ public class ProductServiceImplTest {
         assertEquals(2, product.getImages().size());
     }
 
+    @Test
+    @DisplayName("Should mark product as sold")
+    void markProductAsSold_Success() {
+        // Arrange
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        ProductResponse result = productService.markProductAsSold(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(ProductStatus.SOLD, product.getStatus());
+    }
 }
