@@ -94,4 +94,24 @@ public class ProductServiceImplTest {
 
         products = List.of(product);
     }
+
+    @Test
+    @DisplayName("Should create a product successfully")
+    void createProduct_Success() {
+        // Arrange
+        when(sellerRepository.findById(anyLong())).thenReturn(Optional.of(seller));
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        ProductResponse result = productService.createProduct(productRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(productResponse.getId(), result.getId());
+        assertEquals(productResponse.getName(), result.getName());
+        verify(productRepository, times(1)).save(product);
+    }
 }
