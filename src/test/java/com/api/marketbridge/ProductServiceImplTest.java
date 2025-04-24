@@ -360,7 +360,7 @@ public class ProductServiceImplTest {
     void markProductAsAvailable_Success() {
         // Arrange
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
-        when(productRepository.save(any(Product.class))).thenReturn(product);
+        //when(productRepository.save(any(Product.class))).thenReturn(product);
         when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
 
         // Act
