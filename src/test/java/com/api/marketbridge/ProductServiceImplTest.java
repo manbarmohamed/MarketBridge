@@ -321,4 +321,22 @@ public class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals("new-image-url.jpg", product.getImageUrl());
     }
+
+    @Test
+    @DisplayName("Should upload multiple images successfully")
+    void uploadMultipleImages_Success() {
+        // Arrange
+        List<String> imageUrls = List.of("image1.jpg", "image2.jpg");
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        ProductResponse result = productService.uploadMultipleImages(1L, imageUrls);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, product.getImages().size());
+    }
+
 }
