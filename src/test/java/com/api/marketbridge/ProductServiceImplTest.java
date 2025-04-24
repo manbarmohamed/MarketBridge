@@ -270,4 +270,22 @@ public class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
+
+    @Test
+    @DisplayName("Should get products by seller")
+    void getProductsBySeller_Success() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+        when(productRepository.findByOwnerId(anyLong(), any(Pageable.class))).thenReturn(productPage);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        Page<ProductResponse> result = productService.getProductsBySeller(1L, 0, 10, "id", "asc");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+    }
 }
