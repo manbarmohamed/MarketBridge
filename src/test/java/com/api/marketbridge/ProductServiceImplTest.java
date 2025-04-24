@@ -114,4 +114,15 @@ public class ProductServiceImplTest {
         assertEquals(productResponse.getName(), result.getName());
         verify(productRepository, times(1)).save(product);
     }
+
+    @Test
+    @DisplayName("Should throw exception when seller not found")
+    void createProduct_SellerNotFound() {
+        // Arrange
+        when(sellerRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> productService.createProduct(productRequest));
+        verify(productRepository, never()).save(any(Product.class));
+    }
 }
