@@ -217,4 +217,39 @@ public class ProductServiceImplTest {
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> productService.getProductById(1L));
     }
+
+    @Test
+    @DisplayName("Should get all products with pagination")
+    void getAllProducts_Success() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+        when(productRepository.findAll(any(Pageable.class))).thenReturn(productPage);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        Page<ProductResponse> result = productService.getAllProducts(0, 10, "id", "asc");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(productResponse.getId(), result.getContent().get(0).getId());
+    }
+
+    @Test
+    @DisplayName("Should return empty page when no products exist")
+    void getAllProducts_NoProducts() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Product> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+
+        when(productRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
+
+        // Act
+        Page<ProductResponse> result = productService.getAllProducts(0, 10, "id", "asc");
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 }
