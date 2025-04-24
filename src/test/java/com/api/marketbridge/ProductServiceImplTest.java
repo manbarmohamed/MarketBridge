@@ -288,4 +288,20 @@ public class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
+
+    @Test
+    @DisplayName("Should search products successfully")
+    void searchProducts_Success() {
+        // Arrange
+        when(productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(anyString(), anyString()))
+                .thenReturn(products);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        List<ProductResponse> result = productService.searchProducts("test");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
 }
