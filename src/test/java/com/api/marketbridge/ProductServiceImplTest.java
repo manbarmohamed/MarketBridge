@@ -370,4 +370,19 @@ public class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals(ProductStatus.AVAILABLE, product.getStatus());
     }
+
+    @Test
+    @DisplayName("Should get products by status")
+    void getProductsByStatus_Success() {
+        // Arrange
+        when(productRepository.findByStatus(any(ProductStatus.class))).thenReturn(products);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+
+        // Act
+        List<ProductResponse> result = productService.getProductsByStatus("PENDING");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
 }
