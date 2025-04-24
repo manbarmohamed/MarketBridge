@@ -125,4 +125,16 @@ public class ProductServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> productService.createProduct(productRequest));
         verify(productRepository, never()).save(any(Product.class));
     }
+
+    @Test
+    @DisplayName("Should throw exception when category not found")
+    void createProduct_CategoryNotFound() {
+        // Arrange
+        when(sellerRepository.findById(anyLong())).thenReturn(Optional.of(seller));
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> productService.createProduct(productRequest));
+        verify(productRepository, never()).save(any(Product.class));
+    }
 }
