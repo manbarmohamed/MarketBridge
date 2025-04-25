@@ -112,4 +112,20 @@ public class AuthServiceTest {
         verify(userRepository).save(any(Admin.class));
     }
 
+    @Test
+    void testInit_WhenAdminExists_ShouldNotCreateAdmin() {
+        // Arrange
+        List<User> admins = new ArrayList<>();
+        admins.add(new Admin());
+        when(userRepository.findByRole(Role.ADMIN)).thenReturn(admins);
+
+        // Act
+        authService.init();
+
+        // Assert
+        verify(userRepository).findByRole(Role.ADMIN);
+        verifyNoMoreInteractions(passwordEncoder);
+        verify(userRepository, never()).save(any(Admin.class));
+    }
+
 }
