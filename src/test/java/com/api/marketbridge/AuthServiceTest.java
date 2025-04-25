@@ -128,4 +128,18 @@ public class AuthServiceTest {
         verify(userRepository, never()).save(any(Admin.class));
     }
 
+    @Test
+    void testSignup_WhenUsernameExists_ShouldThrowException() {
+        // Arrange
+        when(userRepository.existsByUsername("testuser")).thenReturn(true);
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            authService.signup(signupRequest);
+        });
+        assertEquals("Username already exists", exception.getMessage());
+        verify(userRepository).existsByUsername("testuser");
+        verifyNoMoreInteractions(userRepository);
+    }
+
 }
