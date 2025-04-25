@@ -1,23 +1,24 @@
 spring:
   application:
     name: marketbridge
+
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
-      url: jdbc:postgresql://localhost:5432/marketbridge_db
-      username: postgres
-      password: admin
-      driver-class-name: org.postgresql.Driver
-  elasticsearch:
-    uris: localhost:9300
-    connection-timeout: 30s
-    socket-timeout: 30s
+    url: jdbc:postgresql://postgres:5432/marketbridge_db
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
   jpa:
+    hibernate:
+      ddl-auto: update  # use 'validate' or 'none' in production
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update  # use 'validate' or 'none' in production
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
-          dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   management:
     health:
@@ -26,22 +27,19 @@ spring:
         response-timeout: 10s
         indices: [ "products" ]
 
-
   jackson:
-      serialization:
-        INDENT_OUTPUT: true  # pretty print JSON
+    serialization:
+      INDENT_OUTPUT: true  # pretty print JSON
 
   server:
     port: 8080
 
-  # Logging
   logging:
     level:
       root: INFO
       org.hibernate.SQL: DEBUG
       org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-  # Springdoc OpenAPI (optional if you're using Swagger UI)
   springdoc:
     api-docs:
       path: /api-docs
