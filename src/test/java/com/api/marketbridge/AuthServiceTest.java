@@ -142,4 +142,20 @@ public class AuthServiceTest {
         verifyNoMoreInteractions(userRepository);
     }
 
+    @Test
+    void testSignup_WhenEmailExists_ShouldThrowException() {
+        // Arrange
+        when(userRepository.existsByUsername("testuser")).thenReturn(false);
+        when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            authService.signup(signupRequest);
+        });
+        assertEquals("Email already exists", exception.getMessage());
+        verify(userRepository).existsByUsername("testuser");
+        verify(userRepository).existsByEmail("test@example.com");
+        verifyNoMoreInteractions(userRepository);
+    }
+
 }
