@@ -50,7 +50,6 @@ public class WebSecurityConfig  {
                         authorizeRequests
                                 //.requestMatchers("/api/auth/login").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
-                                //.requestMatchers("/api/tasks/all").hasRole("WORKER")
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 //.anyRequest().authenticated()
                                 .anyRequest().permitAll()

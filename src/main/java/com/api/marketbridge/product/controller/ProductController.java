@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,10 +32,10 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDir) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "ASC") String sortDir) {
 
         Page<ProductResponse> productPage = productService.getAllProducts(page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
@@ -58,11 +59,11 @@ public class ProductController {
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<Page<ProductResponse>> getProductsByCategory(
-            @PathVariable Long categoryId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDir) {
+            @PathVariable("categoryId") Long categoryId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "ASC") String sortDir) {
 
         Page<ProductResponse> productPage = productService.getProductsByCategory(categoryId, page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
@@ -70,11 +71,11 @@ public class ProductController {
 
     @GetMapping("/seller/{sellerId}")
     public ResponseEntity<Page<ProductResponse>> getProductsBySeller(
-            @PathVariable Long sellerId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDir) {
+            @PathVariable("sellerId") Long sellerId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "ASC") String sortDir) {
 
         Page<ProductResponse> productPage = productService.getProductsBySeller(sellerId, page, size, sortBy, sortDir);
         return ResponseEntity.ok(productPage);
@@ -135,6 +136,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/mark-sold")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProductResponse> markProductAsSold(@PathVariable Long id) {
         return ResponseEntity.ok(productService.markProductAsSold(id));
     }
@@ -147,6 +149,14 @@ public class ProductController {
         List<ProductResponse> products = productService.getProductsByStatus(status);
         return ResponseEntity.ok(products);
     }
+
+//    @GetMapping("/Elscsearch")
+//    public ResponseEntity<List<ProductResponse>> ElasticSearchProducts(
+//            @RequestParam("keyword") String keyword
+//    ) {
+//        List<ProductResponse> results = productService.searchProducts(keyword);
+//        return ResponseEntity.ok(results);
+//    }
 
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
