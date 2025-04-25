@@ -12,6 +12,7 @@ import com.api.marketbridge.product.entity.ProductImage;
 import com.api.marketbridge.product.enums.ProductStatus;
 import com.api.marketbridge.product.mapper.ProductMapper;
 import com.api.marketbridge.product.repository.ProductRepository;
+
 import com.api.marketbridge.product.service.ProductService;
 import com.api.marketbridge.user.entity.Seller;
 import com.api.marketbridge.user.repository.SellerRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -32,7 +34,16 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final SellerRepository sellerRepository;
     private final ImageService imageService;
+    //private final ElasticProductRepository elasticRepo;
 
+//    @PostConstruct
+//    public void indexAllProducts() {
+//        List<Product> products = productRepository.findAll();
+//        List<ElasticProduct> elasticProducts = products.stream()
+//                .map(this::toElasticProduct)
+//                .toList();
+//        elasticRepo.saveAll(elasticProducts);
+//    }
 
     @Override
     public ProductResponse createProduct(ProductRequest request) {
@@ -46,6 +57,8 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(ProductStatus.PENDING);
         Product savedProduct = productRepository.save(product);
 
+//        ElasticProduct elasticProduct = toElasticProduct(product);
+//        elasticRepo.save(elasticProduct);
 
         return productMapper.toResponse(savedProduct);
     }
@@ -162,6 +175,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse markProductAsSold(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new ResourceNotFoundException("Product not found"));
@@ -171,6 +185,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse markProductAsAvailable(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new ResourceNotFoundException("Product not found"));
@@ -179,12 +194,37 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public List<ProductResponse> getProductsByStatus(String status) {
         List<Product> products = productRepository.findByStatus(ProductStatus.valueOf(status));
         return products.stream()
                 .map(productMapper::toResponse)
                 .toList();
     }
+
+
+//    public List<ProductResponse> elasticSearchProducts(String keyword) {
+//        List<ElasticProduct> searchResults =
+//                elasticRepo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+//
+//        List<Product> products = searchResults.stream()
+//                .map(e -> productRepository.findById(Long.valueOf(e.getId())).orElse(null))
+//                .filter(Objects::nonNull)
+//                .toList();
+//
+//        return productMapper.toResponseList(products);
+//    }
+//
+//    public ElasticProduct toElasticProduct(Product product) {
+//        return ElasticProduct.builder()
+//                .id(product.getId().toString())
+//                .name(product.getName())
+//                .description(product.getDescription())
+//                .location(product.getLocation())
+//                .price(product.getPrice())
+//                .build();
+//    }
+
 
     private String extractPublicIdFromUrl(String url) {
         if (url == null) return null;
