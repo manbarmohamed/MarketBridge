@@ -183,4 +183,26 @@ public class AuthServiceTest {
         verify(userMapper).toResponse(user);
     }
 
+    @Test
+    void testLogin_Success() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(jwtUtils.generateToken(user, user.getRole())).thenReturn(token);
+        when(userMapper.toResponse(user)).thenReturn(authResponse);
+
+        // Act
+        AuthResponse result = authService.login(loginRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(authResponse, result);
+        assertEquals(token, result.getToken());
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(userRepository).findByUsername("testuser");
+        verify(jwtUtils).generateToken(user, user.getRole());
+        verify(userMapper).toResponse(user);
+    }
+
 }
