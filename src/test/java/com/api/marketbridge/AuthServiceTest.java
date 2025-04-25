@@ -75,18 +75,41 @@ public class AuthServiceTest {
 
         // Mock the abstract User class
         user = mock(User.class);
-        when(user.getId()).thenReturn(1L);
-        when(user.getUsername()).thenReturn("testuser");
-        when(user.getEmail()).thenReturn("test@example.com");
-        when(user.getPassword()).thenReturn("encodedPassword");
-        when(user.getRole()).thenReturn(Role.BUYER); // Changed USER to BUYER based on provided enum
+
+        // Use lenient stubs to avoid unnecessary stubbing exceptions
+        lenient().when(user.getId()).thenReturn(1L);
+        lenient().when(user.getUsername()).thenReturn("testuser");
+        lenient().when(user.getEmail()).thenReturn("test@example.com");
+        lenient().when(user.getPassword()).thenReturn("encodedPassword");
+        lenient().when(user.getRole()).thenReturn(Role.BUYER);
 
         authResponse = new AuthResponse();
         authResponse.setId(1L);
         authResponse.setUsername("testuser");
         authResponse.setEmail("test@example.com");
-        authResponse.setRole(Role.BUYER); // Changed USER to BUYER based on provided enum
+        authResponse.setRole(Role.BUYER);
 
         token = "jwt-token";
     }
+
+    @Test
+    void testInit_WhenNoAdminExists_ShouldCreateAdmin() {
+        // Arrange
+        when(userRepository.findByRole(Role.ADMIN)).thenReturn(new ArrayList<>());
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(userRepository.save(any(Admin.class))).thenAnswer(invocation -> {
+            Admin admin = invocation.getArgument(0);
+            admin.setId(1L);
+            return admin;
+        });
+
+        // Act
+        authService.init();
+
+        // Assert
+        verify(userRepository).findByRole(Role.ADMIN);
+        verify(passwordEncoder).encode("admin123");
+        verify(userRepository).save(any(Admin.class));
+    }
+
 }
