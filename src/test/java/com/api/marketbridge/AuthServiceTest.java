@@ -158,4 +158,29 @@ public class AuthServiceTest {
         verifyNoMoreInteractions(userRepository);
     }
 
+    @Test
+    void testSignup_Success() {
+        // Arrange
+        when(userRepository.existsByUsername("testuser")).thenReturn(false);
+        when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
+        when(userMapper.toEntity(signupRequest)).thenReturn(user);
+        when(userRepository.save(user)).thenReturn(user);
+        when(jwtUtils.generateToken(user, user.getRole())).thenReturn(token);
+        when(userMapper.toResponse(user)).thenReturn(authResponse);
+
+        // Act
+        AuthResponse result = authService.signup(signupRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(authResponse, result);
+        assertEquals(token, result.getToken());
+        verify(userRepository).existsByUsername("testuser");
+        verify(userRepository).existsByEmail("test@example.com");
+        verify(userMapper).toEntity(signupRequest);
+        verify(userRepository).save(user);
+        verify(jwtUtils).generateToken(user, user.getRole());
+        verify(userMapper).toResponse(user);
+    }
+
 }
