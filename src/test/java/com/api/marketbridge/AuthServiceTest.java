@@ -205,4 +205,22 @@ public class AuthServiceTest {
         verify(userMapper).toResponse(user);
     }
 
+    @Test
+    void testLogin_WhenUserNotFound_ShouldThrowException() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            authService.login(loginRequest);
+        });
+        assertEquals("User not found", exception.getMessage());
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(userRepository).findByUsername("testuser");
+        verifyNoInteractions(jwtUtils);
+        verifyNoInteractions(userMapper);
+    }
+
 }
